@@ -62,8 +62,10 @@ def _construct_url(resource, action, params=None):
                 final_url += params[i] + '&'
             else:
                 final_url += params[i]
-    else:
+    elif type(params) == str:
         final_url += '?{}'.format(params)
+    else:
+        pass
     return final_url
 
 
@@ -88,11 +90,33 @@ def _construct_headers(url):
     return header
 
 
+def _load(url, headers):
+    # print url
+    req = urllib2.Request(api_url + url)
+    req.add_header("Date", headers["Date"])
+    req.add_header("Auth", headers["Auth"])
+    response = urllib2.urlopen(req)
+    content = response.read()
+    # print content
+    data = json.loads(content)
+    try:
+        if data["code"] != 200:
+            raise invalidCode
+        else:
+            return data["message"]
+    except:
+        raise urlParseError
+
+
 class invalidID(Exception):
     pass
 
 
 class invalidCode(Exception):
+    pass
+
+
+class urlParseError(Exception):
     pass
 
 
@@ -105,13 +129,14 @@ class Citizen(object):
         self.resource = "citizen"
         self.action = "profile"
         self.params = "citizenId=" + self.id
+        self.base_citizen_url = "http://www.erepublik.com/en/citizen/profile/"
 
         if not self.id.isdigit():
             raise invalidID
         else:
             self.url = _construct_url(self.resource, self.action, self.params)
             self.headers = _construct_headers(self.url)
-        self.load()
+        self.data = _load(self.url, self.headers)
         # print self.data
 
         # General attributes
@@ -123,6 +148,7 @@ class Citizen(object):
         self.level = self.data["general"]["level"]
         self.birthDay = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
+        self.profile_url = self.base_citizen_url + self.id
 
         # Military attributes
         self.strength = self.data["militaryAttributes"]["strength"]
@@ -181,6 +207,7 @@ class Citizen(object):
             self.in_unit = False
 
         # Newspappers
+
         if self.data["newspaper"]:
             self.owns_newspaper = True
             self.newspaper_id = self.data["newspaper"]["id"]
@@ -203,14 +230,113 @@ class Citizen(object):
         parsed["Total"] = total_count
         return parsed
 
-    def load(self):
-        req = urllib2.Request(api_url + self.url)
-        req.add_header("Date", self.headers["Date"])
-        req.add_header("Auth", self.headers["Auth"])
-        response = urllib2.urlopen(req)
-        content = response.read()
-        self.data = json.loads(content)
-        if self.data["code"] != 200:
-            print self.data["code"]
+
+class Country_regions(object):
+
+    """Contains regions of country as dictionary.
+      Requires country ID as initial argument
+
+    self.regions={ "region_name":{
+                                    "id":
+                                    "owner_id":
+                                    "original_owner_id":
+                                    "url":
+                                }
+
+                }
+    """
+    def __init__(self, countryID):
+        super(Country, self).__init__()
+        self.id = countryID
+        self.resource = "country"
+        self.action = "regions"
+        self.params = "countryId=" + self.id
+
+        if not self.id.isdigit():
+            raise invalidID
         else:
-            self.data = self.data["message"]
+            self.url = _construct_url(self.resource, self.action, self.params)
+            self.headers = _construct_headers(self.url)
+        self.data = _load(self.url, self.headers)
+        self.base_url = "http://www.erepublik.com/en/main/region/"
+        self.regions = {}
+        for item in self.data["regions"]["region"]:
+            region = self.data["regions"]["region"][item]
+            self.regions[region["name"]] = {
+                "id": region["id"],
+                "owner_id": region["current_owner_country_id"],
+                "original_owner_id": region["original_owner_country_id"],
+                "url": self.base_url + region["permalink"]}
+
+
+class Countries(object):
+
+    """Contains list of countries
+        Use `by_id(country_id)` to get basic info about country as dict
+            {
+               "id":"",
+               "name":"",
+               "initials":"",
+               "color":"",
+               "continent_id":"",
+               "continent_name":null,
+               "capital_region_id":null/string,
+               "capital_region_name":null/string
+            },
+    """
+    def __init__(self):
+        super(Countries, self).__init__()
+        self.resource = "countries"
+        self.action = "index"
+        self.url = _construct_url(self.resource, self.action)
+        self.headers = _construct_headers(self.url)
+        self.data = _load(self.url, self.headers)
+        self.all_countries = self.data["countries"]["country"]
+
+    def by_id(self, id):
+        """
+        Returns Country info as dict
+        Requires valid country ID
+        """
+        country_data = None
+        for item in self.all_countries:
+            if item["id"] == id:
+                country_data = item
+                break
+        return country_data
+
+    def by_name(self, name):
+        country_data = None
+
+        for item in self.all_countries:
+            if item["name"].lower() == name.lower():
+                country_data = item
+                break
+        return country_data
+
+
+class Region(object):
+
+    """
+    Contains list of citizen IDs living in that region in self.citizenIDs
+    Requires valid region ID as input and optional page number
+    otherwise 1 is used for page num
+    """
+    def __init__(self, regionID, page="1"):
+        super(Region, self).__init__()
+        self.id = regionID
+        self.page = page
+        self.resource = "region"
+        self.action = "citizens"
+        self.params = ["regionId=" + self.id, "page=" + self.page]
+
+        if not self.id.isdigit():
+            raise invalidID
+        else:
+            self.url = _construct_url(self.resource, self.action, self.params)
+            self.headers = _construct_headers(self.url)
+        self.data = _load(self.url, self.headers)
+        if self.data["citizens"] is False:
+            self.citizenIDs = None
+        else:
+            self.citizenIDs = self.data["citizens"]
