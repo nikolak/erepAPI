@@ -148,7 +148,7 @@ class Citizen(object):
         self.level = self.data["general"]["level"]
         self.birthDay = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
-        self.profile_url = self.base_citizen_url + self.id
+        self.profile_url = +self.id
 
         # Military attributes
         self.strength = self.data["militaryAttributes"]["strength"]
@@ -340,3 +340,62 @@ class Region(object):
             self.citizenIDs = None
         else:
             self.citizenIDs = self.data["citizens"]
+
+
+class Battle(object):
+
+    """docstring for Battle"""
+    def __init__(self, battleID):
+        super(Battle, self).__init__()
+        self.id = battleID
+        self.resource = "battle"
+        self.action = "index"
+        self.params = "battleId=" + self.id
+        self.url = _construct_url(self.resource, self.action, self.params)
+        self.headers = _construct_headers(self.url)
+        self.data = _load(self.url, self.headers)
+
+        self.is_resistance = self.data["battle"]["is_resistance"]
+
+        # Region
+        self.region_id = self.data["battle"]["region"]["id"]
+        self.region_name = self.data["battle"]["region"]["name"]
+
+        # Progress
+        self.start = self._format_time(self.data["battle"]["progress"]["started-at"])
+        self.end = self._format_time(self.data["battle"]["progress"]["finished-at"])
+        self.finish_reason = self.data["battle"]["progress"]["finished-reason"]
+
+        # Defenders
+
+        self.defender_id = self.data["battle"]["progress"]["countries"]["victim_country"]["id"]
+        self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
+        self.defender_alies = {}
+        for item in self.data["battle"]["progress"]["countries"]["victim_country"]["allies"]:
+                country_name = item["country"]["name"]
+                country_id = item["country"]["allied_country_id"]
+                country_initials = item["country"]["initials"]
+                self.defender_alies[country_name] = {"id": country_id,
+                                                    "initials": country_initials
+                                                    }
+
+        # Invaders
+
+        self.defender_id = self.data["battle"]["progress"]["countries"]["invader_country"]["id"]
+        self.defender_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
+        self.defender_alies = {}
+        for item in self.data["battle"]["progress"]["countries"]["invader_country"]["allies"]:
+                print item
+                country_name = item["country"]["name"]
+                country_id = item["country"]["allied_country_id"]
+                country_initials = item["country"]["initials"]
+                self.defender_alies[country_name] = {"id": country_id,
+                                                    "initials": country_initials
+                                                    }
+
+    def _format_time(self, api_time):
+        import time
+        if api_time.isdigit() is False:
+            return None
+        else:
+            return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(api_time)))
