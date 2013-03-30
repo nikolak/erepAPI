@@ -11,7 +11,7 @@ erepublik.com API wrapper.
 
 ## Citizen
 
-Requires player ID (string) as initial argument. Raises `invalidID` exception if not supplied or valid ID
+Requires player ID (as string or integer) as initial argument. Raises `invalidID` exception if not supplied or invalid ID
 
 ### Example usage
 
@@ -23,7 +23,7 @@ Requires player ID (string) as initial argument. Raises `invalidID` exception if
     >>> player.national_rank
     202
     >>> player.strength
-    u'20822.371'
+    20822.371
     >>> player.achievements["Total"]
     182
     >>> player.achievements["President"]
@@ -56,41 +56,41 @@ Requires player ID (string) as initial argument. Raises `invalidID` exception if
 |----------------|:---------------------:|:-----:|
 | `id`        | supplied user ID         | string |
 | `name`        | Profile name              |   string |
-|`is_alive` | Is userprofile alive | boolean
+|`is_alive` | Is user profile alive |boolean|
 |`has_avatar` | Wheter user has custom avatar or not, boolean.
-|`experience_points`|Current number of experience points user has|string|
-|`level`|Current level number|string|
+|`experience_points`|Current number of experience points user has|integer|
+|`level`|Current level number|integer|
 |`birthday`|Date of profile creation, string. `MMM DD, YYYY`|string|
-|`national_rank`|Current national rank number|string|
+|`national_rank`|Current national rank number|integer|
 |`profile_url`|full url to user profile based on ID|string|
-|`strength`|current number of strenght points|string|
-|`rank_points`|number of rank points|string|
+|`strength`|current number of strenght points|float|
+|`rank_points`|number of rank points|integer|
 |`rank_stars`|number of rank stars|integer|
 |`rank_icon`|url to rank icon file|string|
-`achievements`|if there are some this is dictionary with keys as achievement names and number of times the achievement has been earned by player as values. If there are no achievemnts this is `None`|boolean|
-|`citizenship_country_id`|self explanitory |string|
+`achievements`|if there are some this is dictionary with keys as achievement names and number of times the achievement has been earned by player as values(integers). If there are no achievemnts this is `None`|boolean|
+|`citizenship_country_id`|self explanitory |integer|
 |`citizenship_country_name`|self explanitory| string|
 |`citizenship_country_initials`|self explanitory|string|
-|`citizenship_region_id`|self explanitory| string|
-|`citizenship_region_name`|self explanitory| string|
-|`residence_country_id`|self explanitory |string|
+|`citizenship_region_id`|self explanitory|integer|
+|`citizenship_region_name`|self explanitory|string|
+|`residence_country_id`|self explanitory |integer|
 |`residence_country_name`|self explanitory|string|
 |`residence_country_initials`|self explanitory |string|
-|`residence_region_id`|self explanitory| string|
+|`residence_region_id`|self explanitory|integer|
 |`residence_region_name`|self explanitory|string|
 |`party_member`| true if player is part of political party otherwise false.|boolean|
 ||if player is member of political party, the following attributes are also available:|||
-|`party_id`| id of the party| string|
-|`party_name`| name of the party | string|
-|`is_president`| True if selected player is party president, otherwise false| boolean|
+|`party_id`| id of the party|integer|
+|`party_name`| name of the party |string|
+|`is_president`| `True` if selected player is party president, otherwise `False`|boolean|
 |`in_unit`| ture if player is part of political party otherwise false| boolean|
 ||If player is memeber of military unit the following attributes are also available:||
-|`unit_id`| id of the military unit| string|
+|`unit_id`| id of the military unit|integer|
 |`unit_name`|name of the unit|string|
 |`unit_leader`|true if player is leader of the military unit, otherwise false|boolean|
-|`owns_newspaper`|True iff player owns newspapers otherwise false|boolean|
-||If player owns newspapers the following attributes are also available:||
-|`newspaper_id`| id of the newspapers|string|
+|`owns_newspaper`|True if player owns newspapers otherwise false|boolean|
+||If player owns newspapers the following attributes are also available||
+|`newspaper_id`| id of the newspapers|integer|
 |`newspaper_name`|name of the newspapers|string|
 
 
@@ -118,10 +118,10 @@ Each key in `regions` is `region name`(string) and each coresponding value is di
 
 | Key        | Value Description           |  Value Type  |
 |----------------|:---------------------:|:-----:|
-|`id`|region id|string|
-|`owner_id`|ID of the country that is currently owner of the region|string|
-|`original_owner_id`|ID of the country that was/is original owner|string|
-|`url`|full url to ingame page with region info|
+|`id`|region id|integer|
+|`owner_id`|ID of the country that is currently owner of the region|integer|
+|`original_owner_id`|ID of the country that was/is original owner|integer|
+|`url`|full url to ingame page with region info|string|
 
 
 ## Countries
@@ -129,6 +129,8 @@ Each key in `regions` is `region name`(string) and each coresponding value is di
 No initial parameters required.
 
 Used to list all countries or to find country by name or by an ID and list its information.
+
+Each item in returned dictionary is `string` only `continet_name` is `None`
 
 ### Example usage
 
@@ -144,10 +146,17 @@ Used to list all countries or to find country by name or by an ID and list its i
     76 BO
     [...]
 
-    >>> print Countries().by_id("65")
-    {u'name': u'Serbia', u'color': u'FFB47F', u'capital_region_name': u'Belgrade',
-    u'capital_region_id': u'635', u'continent_id': u'1', u'continent_name': None,
-    u'id': u'65', u'initials': u'CS'}
+    >>> print Countries().by_id(65)
+    {
+        u'name': u'Serbia',
+        u'color': u'FFB47F',
+        u'capital_region_name': u'Belgrade',
+        u'capital_region_id': u'635',
+        u'continent_id': u'1',
+        u'continent_name': None,
+        u'id': u'65',
+        u'initials': u'CS'
+    }
     >>> print Countries().by_name("serbia")["initials"]
     CS
 
@@ -156,48 +165,45 @@ Used to list all countries or to find country by name or by an ID and list its i
     {
         "id":"string",
         "name":"string",
-       "initials":"string",
+        "initials":"string",
         "color":"string",
-       "continent_id":"string",
-        "continent_name":null,
-       "capital_region_id":null/string,
-        "capital_region_name":null/string
+        "continent_id":"string",
+        "continent_name":None,
+        "capital_region_id":None/string,
+        "capital_region_name":None/string
     },
 
 ## Regions
 
-Requires valid region ID and, optionally, page number larger regions contain multiple pages of data.
+Requires valid region ID and, optionally, page number as either strings or integers; larger regions contain multiple pages of data.
 
-Contains list of dictionaries with "citizen_id"/id pairs for each citizen who is currently living in that region.
+Contains list of citizen IDs as integers who are living in that region.
 
 
 ### Example usage
 
     >>> from erepublik import Region
-    >>> Region("450",page="2").citizenIDs
-    [{u'citizen_id': u'1379069'},
-    {u'citizen_id': u'1379214'},
-    {u'citizen_id': u'1380608'},
-    [etc]
+    >>> Region(450,page=2).citizenIDs
+    [1379069, 1379214, 1380608, 1380647, 1382406, 1382685,... ]
 
 ## Battle
 
-Requires valid battle ID (string) as initial argument.
+Requires valid battle ID (string/integer) as initial argument.
 
 ### Example usage
 
     >>> from erepublik import Battle
-    >>> b=Battle("39841")
+    >>> b=Battle(39841)
     >>> b.is_resistance
     False
     >>> b.region_id
-    u'450'
+    450
     >>> b.start
     '2013-03-29 08:55:12'
     >>> print b.end
     None
     >>> b.defender_id
-    u'59'
+    59
     >>> b.defender_initials
     u'TH'
     >>> for k,v in b.defender_alies.items():
@@ -213,19 +219,33 @@ Requires valid battle ID (string) as initial argument.
 
 | Variable        | Description           | Type  |
 |----------------|:---------------------:|:-----:|
-|`region_id`|id of the on which the battle is being fought on|string|
+|`region_id`|id of the on which the battle is being fought on|integer|
 |`region_name`|name of the region|string|
 |`start`|date and time of the battle start, `YYYY-MM-DD HH:MM:SS` format|string|
 |`end`|date and time of the battle end `YYYY-MM-DD HH:MM:SS` format. None if the battle is still ongoing.|string|
 |`finish_reason`|reason for battle finish if the battle has ended|string|
-|`defender_id`|id of the country that's being attacked(defender)|string|
-|`attacker_id`|id of the country that's attacking(attacker) defender|string|
+|`defender_id`|id of the country that's being attacked(defender)|integer|
+|`attacker_id`|id of the country that's attacking(attacker) defender|integer|
 |`defender_initials`|initials of the country that's being attacked(defender)|string|
 |`attacker_initials`|initials of the country that's attacking(attacker)|string|
 |`defender_alies`|alies of the country that's being attacked(defender)|dictionary|
 |`attacker_alies`|alies of the country that's attacking(attacker)|dictionary|
 
-Alies are dictionaries with country name as key and another dictionary containing country `id` and `initials` as value.
+Alies dictionary, country names are strings:
+
+{
+    country_name:dictionary,
+    country_name:dictionary,
+    [...]
+}
+
+
+Alies dictionary values structure:
+
+| Key        | Value Description           | Type  |
+|----------------|:---------------------:|:-----:|
+|`"id"`|Country ID of the ally country|integer|
+|`"initials"`|Country initials of the ally country|string|
 
 ___
 
