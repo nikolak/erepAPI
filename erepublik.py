@@ -19,31 +19,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE
 
-import urllib2
-import json
-from hashlib import sha256
-from datetime import datetime
 import hmac
-import binascii
+import json
+import urllib2
+from hashlib import sha256
+from time import strftime, gmtime, localtime
+
 
 api_url = "http://api.erepublik.com/"
 public_key = "public_key"
 private_key = "private_key"
-
-
-def _date_header(utc):
-    """Return a string representation of a date according to RFC 1123
-    (HTTP/1.1).
-
-    The supplied date must be in UTC.
-
-    """
-    weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][utc.weekday()]
-    month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
-             "Oct", "Nov", "Dec"][utc.month - 1]
-    return "%s, %02d %s %04d %02d:%02d:%02d" % (weekday, utc.day, month,
-                                                utc.year, utc.hour, utc.minute,
-                                                utc.second)
 
 
 def _construct_url(resource, action, params=None):
@@ -53,6 +38,8 @@ def _construct_url(resource, action, params=None):
     Multiple parameters must be a list.
 
     Single parameters must be a single string
+
+    Internal usage
     """
     final_url = '{}/{}'.format(resource, action)
     if type(params) == list:
@@ -69,28 +56,33 @@ def _construct_url(resource, action, params=None):
     return final_url
 
 
-def _digest(string):
-    """
-    Generate hash value using HMAC method and sha256
-
-    Requires private access key
-    """
-    hashed = hmac.new(private_key, string, sha256)
-    return hashed.hexdigest()
-
-
 def _construct_headers(url):
+    """
+    Constructs headers to send with request.
+    Internal usage.
+
+    The Date header needs to be the current date and
+    time of the request in RFC1123 format (e.g. Tue, 04 Sep 2012 15:57:48)
+
+    The Auth header structure is {public_key}/{digest} where {public_key}
+    is your public key provided by eRepublik and {digest}
+    is a hash that represents an encrypted value of a concatenated string
+    formed from {resource}, {action}, {params} (if they exist),
+    and {date} (the same value Date header has).
+    """
     header = {"Auth": public_key + '/'}
-    date = _date_header(datetime.utcnow())
+    date = strftime("%a, %d %b %Y %H:%M:%S", gmtime())
     header["Date"] = date
-    to_digest = url.replace('/', ':').replace('?', ':') + ':'
-    to_digest = to_digest.lower()
+    to_digest = (url.replace('/', ':').replace('?', ':') + ':').lower()
     to_digest += date
-    header["Auth"] += _digest(to_digest)
+    header["Auth"] += hmac.new(private_key, to_digest, sha256).hexdigest()
     return header
 
 
 def _load(url, headers):
+    """
+    Returns json/dictionary of data in "message" from API response
+    """
     req = urllib2.Request(api_url + url)
     req.add_header("Date", headers["Date"])
     req.add_header("Auth", headers["Auth"])
@@ -120,7 +112,9 @@ class urlParseError(Exception):
 
 class Citizen(object):
 
-    """docstring for Citizen"""
+    """Contains all citizen variables
+        requires valid citizen ID as initial parameter
+    """
     def __init__(self, citizenID):
         super(Citizen, self).__init__()
         self.id = str(citizenID)
@@ -147,7 +141,6 @@ class Citizen(object):
         self.level = int(self.data["general"]["level"])
         self.birthday = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
-        # self.profile_url=self.base_citizen_url+self.id
 
         # Military attributes
         self.strength = float(self.data["militaryAttributes"]["strength"])
@@ -203,7 +196,6 @@ class Citizen(object):
             self.in_unit = False
 
         # Newspappers
-
         if self.data["newspaper"]:
             self.owns_newspaper = True
             self.newspaper_id = int(self.data["newspaper"]["id"])
@@ -213,8 +205,12 @@ class Citizen(object):
 
     def __parse_achievements(self):
         """
-        Returns a single string with list of all medals/achievements and
+        Returns a dictionary with all medals/achievements and
         total number of them from selected citizen
+
+        {
+            "achievement_name":quantaty_integer,
+        }
         """
         total_count = 0
         parsed = {}
@@ -233,10 +229,10 @@ class Country_regions(object):
       Requires country ID as initial argument
 
     self.regions={ "region_name":{
-                                    "id":
-                                    "owner_id":
-                                    "original_owner_id":
-                                    "url":
+                                    "id":integer
+                                    "owner_id":integer
+                                    "original_owner_id":integer
+                                    "url":string
                                 }
 
                 }
@@ -270,11 +266,11 @@ class Countries(object):
     """Contains list of countries
         Use `by_id(country_id)` to get basic info about country as dict
             {
-               "id":"",
-               "name":"",
-               "initials":"",
-               "color":"",
-               "continent_id":"",
+               "id":string,
+               "name":string,
+               "initials":string,
+               "color":string,
+               "continent_id":string,
                "continent_name":null,
                "capital_region_id":null/string,
                "capital_region_name":null/string
@@ -302,6 +298,10 @@ class Countries(object):
         return country_data
 
     def by_name(self, name):
+        """
+        Returns Country info as dict
+        Requires valid country name
+        """
         country_data = None
 
         for item in self.all_countries:
@@ -391,8 +391,7 @@ class Battle(object):
                                                      }
 
     def _format_time(self, api_time):
-        import time
         if api_time.isdigit() is False:
             return None
         else:
-            return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(int(api_time)))
+            return strftime('%Y-%m-%d %H:%M:%S', localtime(int(api_time)))
