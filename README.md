@@ -57,7 +57,7 @@ Requires player ID (as string or integer) as initial argument. Raises `invalidID
 | `id`        | supplied user ID         | string |
 | `name`        | Profile name              |   string |
 |`is_alive` | Is user profile alive |boolean|
-|`has_avatar` | Wheter user has custom avatar or not, boolean.
+|`has_avatar` | Wheter user has custom avatar or not|boolean|
 |`experience_points`|Current number of experience points user has|integer|
 |`level`|Current level number|integer|
 |`birthday`|Date of profile creation, string. `MMM DD, YYYY`|string|
@@ -67,7 +67,7 @@ Requires player ID (as string or integer) as initial argument. Raises `invalidID
 |`rank_points`|number of rank points|integer|
 |`rank_stars`|number of rank stars|integer|
 |`rank_icon`|url to rank icon file|string|
-`achievements`|if there are some this is dictionary with keys as achievement names and number of times the achievement has been earned by player as values(integers). If there are no achievemnts this is `None`|boolean|
+|`achievements`|Dictionary of achievements with keys as achievement name and quantaty(`integer`) as value.|Dictionary|
 |`citizenship_country_id`|self explanitory |integer|
 |`citizenship_country_name`|self explanitory| string|
 |`citizenship_country_initials`|self explanitory|string|
@@ -96,12 +96,12 @@ Requires player ID (as string or integer) as initial argument. Raises `invalidID
 
 ## Country_regions
 
-Requires country ID (as string) as initial argument.
+Requires country ID (as `string` or `integer`) as initial argument.
 
 ### Example usage
 
     >>> from erepublik import Country_regions
-    >>> regions=Country_regions("65").regions
+    >>> regions=Country_regions(65).regions
     >>> for k,v in regions.items():
     ...     print k,v["id"]
     ...
@@ -175,7 +175,7 @@ Each item in returned dictionary is `string` only `continet_name` is `None`
 
 ## Regions
 
-Requires valid region ID and, optionally, page number as either strings or integers; larger regions contain multiple pages of data.
+Requires valid region ID and, optionally, page number as either `string`s or `integer`s; larger regions contain multiple pages of data.
 
 Contains list of citizen IDs as integers who are living in that region.
 
@@ -222,7 +222,7 @@ Requires valid battle ID (string/integer) as initial argument.
 |`region_id`|id of the on which the battle is being fought on|integer|
 |`region_name`|name of the region|string|
 |`start`|date and time of the battle start, `YYYY-MM-DD HH:MM:SS` format|string|
-|`end`|date and time of the battle end `YYYY-MM-DD HH:MM:SS` format. None if the battle is still ongoing.|string|
+|`end`|date and time of the battle end `YYYY-MM-DD HH:MM:SS` format, otherwise `None`|string|
 |`finish_reason`|reason for battle finish if the battle has ended|string|
 |`defender_id`|id of the country that's being attacked(defender)|integer|
 |`attacker_id`|id of the country that's attacking(attacker) defender|integer|
