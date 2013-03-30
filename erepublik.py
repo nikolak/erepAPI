@@ -147,6 +147,7 @@ class Citizen(object):
         self.level = int(self.data["general"]["level"])
         self.birthday = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
+        # self.profile_url=self.base_citizen_url+self.id
 
         # Military attributes
         self.strength = float(self.data["militaryAttributes"]["strength"])
@@ -159,7 +160,7 @@ class Citizen(object):
         if self.data["achievements"]:
             self.achievements = self.__parse_achievements()
         else:
-            self.achievements = None
+            self.achievements = {}
 
         # Location
         self.citizenship_country_id =\
@@ -242,7 +243,7 @@ class Country_regions(object):
     """
     def __init__(self, countryID):
         super(Country_regions, self).__init__()
-        self.id = countryID
+        self.id = str(countryID)
         self.resource = "country"
         self.action = "regions"
         self.params = "countryId=" + self.id
@@ -365,6 +366,7 @@ class Battle(object):
         self.finish_reason = self.data["battle"]["progress"]["finished-reason"]
 
         # Defenders
+
         self.defender_id = int(self.data["battle"]["progress"]["countries"]["victim_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
         self.defender_alies = {}
