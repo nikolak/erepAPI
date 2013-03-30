@@ -123,11 +123,11 @@ class Citizen(object):
     """docstring for Citizen"""
     def __init__(self, citizenID):
         super(Citizen, self).__init__()
-        self.id = citizenID
+        self.id = str(citizenID)
         self.resource = "citizen"
         self.action = "profile"
         self.params = "citizenId=" + self.id
-        self.profile_url = "http://www.erepublik.com/en/citizen/profile/"+self.id
+        self.profile_url = "http://www.erepublik.com/en/citizen/profile/" + self.id
 
         if not self.id.isdigit():
             raise invalidID
@@ -138,18 +138,19 @@ class Citizen(object):
 
         # General attributes
         self.name = self.data["general"]["name"]
-        self.is_alive = self.data["general"]["is_alive"]
+        if self.name is None:
+            raise invalidID
+        self.is_alive = self.data["general"]["is_alive"] == "1"
         self.has_avatar = self.data["general"]["has_avatar"]
         self.avatar = self.data["general"]["avatar"]
-        self.experience_points = self.data["general"]["experience_points"]
-        self.level = self.data["general"]["level"]
-        self.birthDay = self.data["general"]["birthDay"]
+        self.experience_points = int(self.data["general"]["experience_points"])
+        self.level = int(self.data["general"]["level"])
+        self.birthday = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
-        # self.profile_url=self.base_citizen_url+self.id
 
         # Military attributes
-        self.strength = self.data["militaryAttributes"]["strength"]
-        self.rank_points = self.data["militaryAttributes"]["rank_points"]
+        self.strength = float(self.data["militaryAttributes"]["strength"])
+        self.rank_points = int(self.data["militaryAttributes"]["rank_points"])
         self.rank_name = self.data["militaryAttributes"]["rank_name"]
         self.rank_stars = self.data["militaryAttributes"]["rank_stars"]
         self.rank_icon = self.data["militaryAttributes"]["rank_icon"]
@@ -162,42 +163,39 @@ class Citizen(object):
 
         # Location
         self.citizenship_country_id =\
-            self.data["location"]["citizenship_country_id"]
+            int(self.data["location"]["citizenship_country_id"])
         self.citizenship_country_name =\
             self.data["location"]["citizenship_country_id"]
         self.citizenship_country_initials =\
             self.data["location"]["citizenship_country_initials"]
         self.citizenship_region_id =\
-            self.data["location"]["citizenship_region_id"]
+            int(self.data["location"]["citizenship_region_id"])
         self.citizenship_region_name =\
             self.data["location"]["citizenship_region_name"]
         self.residence_country_id =\
-            self.data["location"]["residence_country_id"]
+            int(self.data["location"]["residence_country_id"])
         self.residence_country_name =\
             self.data["location"]["residence_country_name"]
         self.residence_country_initials =\
             self.data["location"]["residence_country_initials"]
         self.residence_region_id =\
-            self.data["location"]["residence_region_id"]
+            int(self.data["location"]["residence_region_id"])
         self.residence_region_name =\
             self.data["location"]["residence_region_name"]
 
         # Party info
         if self.data["party"]:
             self.party_member = True
-            self.party_id = self.data["party"]["id"]
+            self.party_id = int(self.data["party"]["id"])
             self.party_name = self.data["party"]["name"]
-            if self.data["party"]["is_president"] == "1":
-                self.is_president = True
-            else:
-                self.is_president = False
+            self.is_president = self.data["party"]["is_president"] == "1"
         else:
             self.party_member = False
 
         # Military unit
         if self.data["militaryUnit"]:
             self.in_unit = True
-            self.unit_id = self.data["militaryUnit"]["id"]
+            self.unit_id = int(self.data["militaryUnit"]["id"])
             self.unit_name = self.data["militaryUnit"]["name"]
             self.unit_leader = self.data["militaryUnit"]["is_leader"]
         else:
@@ -207,7 +205,7 @@ class Citizen(object):
 
         if self.data["newspaper"]:
             self.owns_newspaper = True
-            self.newspaper_id = self.data["newspaper"]["id"]
+            self.newspaper_id = int(self.data["newspaper"]["id"])
             self.newspaper_name = self.data["newspaper"]["name"]
         else:
             self.owns_newspaper = False
@@ -260,9 +258,9 @@ class Country_regions(object):
         for item in self.data["regions"]["region"]:
             region = self.data["regions"]["region"][item]
             self.regions[region["name"]] = {
-                "id": region["id"],
-                "owner_id": region["current_owner_country_id"],
-                "original_owner_id": region["original_owner_country_id"],
+                "id": int(region["id"]),
+                "owner_id": int(region["current_owner_country_id"]),
+                "original_owner_id": int(region["original_owner_country_id"]),
                 "url": self.base_url + region["permalink"]}
 
 
@@ -297,7 +295,7 @@ class Countries(object):
         """
         country_data = None
         for item in self.all_countries:
-            if item["id"] == id:
+            if item["id"] == str(id):
                 country_data = item
                 break
         return country_data
@@ -319,10 +317,10 @@ class Region(object):
     Requires valid region ID as input and optional page number
     otherwise 1 is used for page num
     """
-    def __init__(self, regionID, page="1"):
+    def __init__(self, regionID, page=1):
         super(Region, self).__init__()
-        self.id = regionID
-        self.page = page
+        self.id = str(regionID)
+        self.page = str(page)
         self.resource = "region"
         self.action = "citizens"
         self.params = ["regionId=" + self.id, "page=" + self.page]
@@ -336,7 +334,7 @@ class Region(object):
         if self.data["citizens"] is False:
             self.citizenIDs = None
         else:
-            self.citizenIDs = self.data["citizens"]
+            self.citizenIDs = [int(cit_id["citizen_id"]) for cit_id in self.data["citizens"]]
 
 
 class Battle(object):
@@ -344,7 +342,7 @@ class Battle(object):
     """docstring for Battle"""
     def __init__(self, battleID):
         super(Battle, self).__init__()
-        self.id = battleID
+        self.id = str(battleID)
         self.resource = "battle"
         self.action = "index"
         self.params = "battleId=" + self.id
@@ -355,13 +353,10 @@ class Battle(object):
             self.headers = _construct_headers(self.url)
         self.data = _load(self.url, self.headers)
 
-        if self.data["battle"]["is_resistance"] == "true":
-            self.is_resistance = True
-        else:
-            self.is_resistance = False
+        self.is_resistance = self.data["battle"]["is_resistance"] == "true"
 
         # Region
-        self.region_id = self.data["battle"]["region"]["id"]
+        self.region_id = int(self.data["battle"]["region"]["id"])
         self.region_name = self.data["battle"]["region"]["name"]
 
         # Progress
@@ -370,24 +365,24 @@ class Battle(object):
         self.finish_reason = self.data["battle"]["progress"]["finished-reason"]
 
         # Defenders
-        self.defender_id = self.data["battle"]["progress"]["countries"]["victim_country"]["id"]
+        self.defender_id = int(self.data["battle"]["progress"]["countries"]["victim_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
         self.defender_alies = {}
         for item in self.data["battle"]["progress"]["countries"]["victim_country"]["allies"]:
                 country_name = item["country"]["name"]
-                country_id = item["country"]["allied_country_id"]
+                country_id = int(item["country"]["allied_country_id"])
                 country_initials = item["country"]["initials"]
                 self.defender_alies[country_name] = {"id": country_id,
                                                      "initials": country_initials
                                                      }
 
         # Invaders
-        self.defender_id = self.data["battle"]["progress"]["countries"]["invader_country"]["id"]
+        self.defender_id = int(self.data["battle"]["progress"]["countries"]["invader_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
         self.defender_alies = {}
         for item in self.data["battle"]["progress"]["countries"]["invader_country"]["allies"]:
                 country_name = item["country"]["name"]
-                country_id = item["country"]["allied_country_id"]
+                country_id = int(item["country"]["allied_country_id"])
                 country_initials = item["country"]["initials"]
                 self.defender_alies[country_name] = {"id": country_id,
                                                      "initials": country_initials
