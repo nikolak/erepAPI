@@ -11,112 +11,92 @@ erepublik.com API wrapper.
 
 ## Citizen
 
-Requires player ID as string.
+Requires player ID (string) as initial argument. Raises `invalidID` exception if not supplied or valid ID
 
 ### Example usage
 
 
     >>> from erepublik import Citizen
-    >>> Citizen("1649964").national_rank
-    196
-    >>> Citizen("1649964").strength
-    u'20731.371'
-    >>> Citizen("1649964").achievements["Total"]
-    181
-    >>> Citizen("1649964").achievements["President"]
+    >>> player=Citizen("1649964") # where "1649964" is player ID
+    >>> player
+    <erepublik.Citizen object at 0xb743f14c>
+    >>> player.national_rank
+    202
+    >>> player.strength
+    u'20822.371'
+    >>> player.achievements["Total"]
+    182
+    >>> player.achievements["President"]
     1
-    >>> Citizen("1649964").in_unit
+    >>> player.in_unit
     True
-    >>> for k,v in Citizen("1649964").achievements.items():
-    ...     print k,v
+    >>> for key,value in player.achievements.items():
+    ...     print key,value
     ...
     Ambassador 1
     Hero 21
-    Super trooper 82
-    [...]
+    Super trooper 83
+    Hard worker 44
+    Mercenary 1
+    Congressman 6
+    Media mogul 2
+    True patriot 19
+    Resistance hero 2
+    Campaign hero 1
+    President 1
+    Total 182
+    Society builder 1
+    >>>
 
 
-**Full list of attributes**
 
-`id` - supplied user ID, string.
+### Full list of player variables available in Citizen class
 
-`name` - Profile name, string.
+| Variable        | Description           | Type  |
+|----------------|:---------------------:|:-----:|
+| `id`        | supplied user ID         | string |
+| `name`        | Profile name              |   string |
+|`is_alive` | Is userprofile alive | boolean
+|`has_avatar` | Wheter user has custom avatar or not, boolean.
+|`experience_points`|Current number of experience points user has|string|
+|`level`|Current level number|string|
+|`birthday`|Date of profile creation, string. `MMM DD, YYYY`|string|
+|`national_rank`|Current national rank number|string|
+|`profile_url`|full url to user profile based on ID|string|
+|`strength`|current number of strenght points|string|
+|`rank_points`|number of rank points|string|
+|`rank_stars`|number of rank stars|integer|
+|`rank_icon`|url to rank icon file|string|
+`achievements`|if there are some this is dictionary with keys as achievement names and number of times the achievement has been earned by player as values. If there are no achievemnts this is `None`|boolean|
+|`citizenship_country_id`|self explanitory |string|
+|`citizenship_country_name`|self explanitory| string|
+|`citizenship_country_initials`|self explanitory|string|
+|`citizenship_region_id`|self explanitory| string|
+|`citizenship_region_name`|self explanitory| string|
+|`residence_country_id`|self explanitory |string|
+|`residence_country_name`|self explanitory|string|
+|`residence_country_initials`|self explanitory |string|
+|`residence_region_id`|self explanitory| string|
+|`residence_region_name`|self explanitory|string|
+|`party_member`| true if player is part of political party otherwise false.|boolean|
+||if player is member of political party, the following attributes are also available:|||
+|`party_id`| id of the party| string|
+|`party_name`| name of the party | string|
+|`is_president`| True if selected player is party president, otherwise false| boolean|
+|`in_unit`| ture if player is part of political party otherwise false| boolean|
+||If player is memeber of military unit the following attributes are also available:||
+|`unit_id`| id of the military unit| string|
+|`unit_name`|name of the unit|string|
+|`unit_leader`|true if player is leader of the military unit, otherwise false|boolean|
+|`owns_newspaper`|True iff player owns newspapers otherwise false|boolean|
+||If player owns newspapers the following attributes are also available:||
+|`newspaper_id`| id of the newspapers|string|
+|`newspaper_name`|name of the newspapers|string|
 
-`is_alive` - Is userprofile alive, boolean
-
-`has_avatar` - Wheter user has custom avatar or not, boolean.
-
-`experience_points` - Current number of experience points user has, string.
-
-`level` - Current level number, string.
-
-`birthday` - Date of profile creation, string. `MMM DD, YYYY` format.
-
-`national_rank` - Current national rank number, string.
-
-`url` - full url to user profile based on ID, string.
-
-`strength` - current number of strenght points, string.
-
-`rank_points` - number of rank points, string.
-
-`rank_stars` - number of rank stars, integer.
-
-`rank_icon` - url to rank icon file, string.
-
-`achievements` - if there are some this is dictionary with keys as achievement names and number of times the achievement has been earned by player as values. If there are no achievemnts this is `None`
-
-`citizenship_country_id` - self explanitory, string
-
-`citizenship_country_name` - self explanitory, string
-
-`citizenship_country_initials` - self explanitory, string
-
-`citizenship_region_id` - self explanitory, string
-
-`citizenship_region_name` - self explanitory, string
-
-`residence_country_id` - self explanitory, string
-
-`residence_country_name` - self explanitory, string
-
-`residence_country_initials` - self explanitory, string
-
-`residence_region_id` - self explanitory, string
-
-`residence_region_name` - self explanitory, strin
-
-`party_member` - boolean, true if player is part of political party otherwise false.
-
-if player is member of political party, the following attributes are also available:
-
-`party_id` - id of the party, string.
-
-`party_name` - name of the party, string.
-
-`is_president` - True if selected player is party president, otherwise false. boolean.
-
-`in_unit` - ture if player is part of political party otherwise false, boolean.
-
-If player is memeber of military unit the following attributes are also available:
-
-`unit_id` - id of the military unit, string.
-
-`unit_name` name of the unit, string.
-
-`unit_leader` - true if player is leader of the military unit, otherwise false. boolean.
-
-`owns_newspaper` - True iff player owns newspapers otherwise false, boolean.
-
-If player owns newspapers the following attributes are also available:
-
-`newspaper_id` - id of the newspapers, string.
-
-`newspaper_name` - name of the newspapers, string.
 
 ## Country_regions
 
-Requires country ID as string.
+Requires country ID (as string) as initial argument.
 
 ### Example usage
 
@@ -134,15 +114,15 @@ Requires country ID as string.
     Sumadija 636
     Raska 639
 
-Each key in `regions` is region name and each coresponding value is dict and contains following key, value pairs:
+Each key in `regions` is `region name`(string) and each coresponding value is dict and contains following key, value pairs:
 
-`id` - region id, string.
+| Key        | Value Description           |  Value Type  |
+|----------------|:---------------------:|:-----:|
+|`id`|region id|string|
+|`owner_id`|ID of the country that is currently owner of the region|string|
+|`original_owner_id`|ID of the country that was/is original owner|string|
+|`url`|full url to ingame page with region info|
 
-`owner_id` - ID of the country that is currently owner of the region, string.
-
-`original_owner_id` - ID of the country that was/is original owner, string.
-
-`url` - full url to ingame page with region info.
 
 ## Countries
 
@@ -165,11 +145,13 @@ Used to list all countries or to find country by name or by an ID and list its i
     [...]
 
     >>> print Countries().by_id("65")
-    {u'name': u'Serbia', u'color': u'FFB47F', u'capital_region_name': u'Belgrade', u'capital_region_id': u'635', u'continent_id': u'1', u'continent_name': None, u'id': u'65', u'initials': u'CS'}
+    {u'name': u'Serbia', u'color': u'FFB47F', u'capital_region_name': u'Belgrade',
+    u'capital_region_id': u'635', u'continent_id': u'1', u'continent_name': None,
+    u'id': u'65', u'initials': u'CS'}
     >>> print Countries().by_name("serbia")["initials"]
     CS
 
-`all_countries` - is list of dictionaries each with following structure:
+`all_countries` - is a `list` of dictionaries each with following structure:
 
     {
         "id":"string",
@@ -184,7 +166,7 @@ Used to list all countries or to find country by name or by an ID and list its i
 
 ## Regions
 
-Requires valid region ID and optionally page to display, larger regions contain multiple pages of data.
+Requires valid region ID and, optionally, page number larger regions contain multiple pages of data.
 
 Contains list of dictionaries with "citizen_id"/id pairs for each citizen who is currently living in that region.
 
@@ -200,7 +182,7 @@ Contains list of dictionaries with "citizen_id"/id pairs for each citizen who is
 
 ## Battle
 
-Requires valid battle ID as string.
+Requires valid battle ID (string) as initial argument.
 
 ### Example usage
 
@@ -218,12 +200,6 @@ Requires valid battle ID as string.
     u'59'
     >>> b.defender_initials
     u'TH'
-    >>> for k,v in b.defender_alies:
-    ...     print k,v["id"]
-    ...
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    ValueError: too many values to unpack
     >>> for k,v in b.defender_alies.items():
     ...     print k,v["id"]
     ...
@@ -233,23 +209,44 @@ Requires valid battle ID as string.
     Republic of Macedonia (FYROM) 79
     [...]
 
-Other attributes:
+### Full list of battle variables available in Battle class
 
-`region_id` - id of the on which the battle is being fought on, string.
+| Variable        | Description           | Type  |
+|----------------|:---------------------:|:-----:|
+|`region_id`|id of the on which the battle is being fought on|string|
+|`region_name`|name of the region|string|
+|`start`|date and time of the battle start, `YYYY-MM-DD HH:MM:SS` format|string|
+|`end`|date and time of the battle end `YYYY-MM-DD HH:MM:SS` format. None if the battle is still ongoing.|string|
+|`finish_reason`|reason for battle finish if the battle has ended|string|
+|`defender_id`|id of the country that's being attacked(defender)|string|
+|`attacker_id`|id of the country that's attacking(attacker) defender|string|
+|`defender_initials`|initials of the country that's being attacked(defender)|string|
+|`attacker_initials`|initials of the country that's attacking(attacker)|string|
+|`defender_alies`|alies of the country that's being attacked(defender)|dictionary|
+|`attacker_alies`|alies of the country that's attacking(attacker)|dictionary|
 
-`region_name` - name of the region, string.
+Alies are dictionaries with country name as key and another dictionary containing country `id` and `initials` as value.
 
-`start` - date and time of the battle start, string YYYY-MM-DD HH:MM:SS format
+___
 
-`end` - date and time of the battle end, string YYYY-MM-DD HH:MM:SS format. None if the battle is still ongoing.
+# Licence
 
-`finish_reason` - reason for battle finish if the battle has ended, string.
+Copyright (c) 2013 Nikola Kovacevic nikolak@outlook.com,nikola.kovacevic91@gmail.com
 
-`defender_id`, `attacker_id` - id of the country that's being attacked(defender) or that's attacking(attacker).
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-`defender_initials`,`attacker_initials` - initials of the country that's being attacked(defender) or that's attacking(attacker).
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-`defender_alies`,`attacker_alies` - alies of the country that's being attacked(defender) or that's attacking(attacker).
-
-Alies are dictionary with country name as key and another dictionary containing country `id` and `initials` as value.
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
