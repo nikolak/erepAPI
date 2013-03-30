@@ -1,5 +1,5 @@
 # Copyright (c) 2013 Nikola Kovacevic   <nikolak@outlook.com>,
-#                                        <nikola.kovacevic91@gmail.com>
+#                                       <nikola.kovacevic91@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -91,13 +91,11 @@ def _construct_headers(url):
 
 
 def _load(url, headers):
-    # print url
     req = urllib2.Request(api_url + url)
     req.add_header("Date", headers["Date"])
     req.add_header("Auth", headers["Auth"])
     response = urllib2.urlopen(req)
     content = response.read()
-    # print content
     data = json.loads(content)
     try:
         if data["code"] != 200:
@@ -129,7 +127,7 @@ class Citizen(object):
         self.resource = "citizen"
         self.action = "profile"
         self.params = "citizenId=" + self.id
-        self.base_citizen_url = "http://www.erepublik.com/en/citizen/profile/"
+        self.profile_url = "http://www.erepublik.com/en/citizen/profile/"+self.id
 
         if not self.id.isdigit():
             raise invalidID
@@ -137,7 +135,6 @@ class Citizen(object):
             self.url = _construct_url(self.resource, self.action, self.params)
             self.headers = _construct_headers(self.url)
         self.data = _load(self.url, self.headers)
-        # print self.data
 
         # General attributes
         self.name = self.data["general"]["name"]
@@ -148,7 +145,7 @@ class Citizen(object):
         self.level = self.data["general"]["level"]
         self.birthDay = self.data["general"]["birthDay"]
         self.national_rank = self.data["general"]["nationalRank"]
-        self.profile_url = +self.id
+        # self.profile_url=self.base_citizen_url+self.id
 
         # Military attributes
         self.strength = self.data["militaryAttributes"]["strength"]
@@ -246,7 +243,7 @@ class Country_regions(object):
                 }
     """
     def __init__(self, countryID):
-        super(Country, self).__init__()
+        super(Country_regions, self).__init__()
         self.id = countryID
         self.resource = "country"
         self.action = "regions"
@@ -351,11 +348,17 @@ class Battle(object):
         self.resource = "battle"
         self.action = "index"
         self.params = "battleId=" + self.id
-        self.url = _construct_url(self.resource, self.action, self.params)
-        self.headers = _construct_headers(self.url)
+        if not self.id.isdigit():
+            raise invalidID
+        else:
+            self.url = _construct_url(self.resource, self.action, self.params)
+            self.headers = _construct_headers(self.url)
         self.data = _load(self.url, self.headers)
 
-        self.is_resistance = self.data["battle"]["is_resistance"]
+        if self.data["battle"]["is_resistance"] == "true":
+            self.is_resistance = True
+        else:
+            self.is_resistance = False
 
         # Region
         self.region_id = self.data["battle"]["region"]["id"]
@@ -367,7 +370,6 @@ class Battle(object):
         self.finish_reason = self.data["battle"]["progress"]["finished-reason"]
 
         # Defenders
-
         self.defender_id = self.data["battle"]["progress"]["countries"]["victim_country"]["id"]
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
         self.defender_alies = {}
@@ -376,22 +378,20 @@ class Battle(object):
                 country_id = item["country"]["allied_country_id"]
                 country_initials = item["country"]["initials"]
                 self.defender_alies[country_name] = {"id": country_id,
-                                                    "initials": country_initials
-                                                    }
+                                                     "initials": country_initials
+                                                     }
 
         # Invaders
-
         self.defender_id = self.data["battle"]["progress"]["countries"]["invader_country"]["id"]
         self.defender_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
         self.defender_alies = {}
         for item in self.data["battle"]["progress"]["countries"]["invader_country"]["allies"]:
-                print item
                 country_name = item["country"]["name"]
                 country_id = item["country"]["allied_country_id"]
                 country_initials = item["country"]["initials"]
                 self.defender_alies[country_name] = {"id": country_id,
-                                                    "initials": country_initials
-                                                    }
+                                                     "initials": country_initials
+                                                     }
 
     def _format_time(self, api_time):
         import time
