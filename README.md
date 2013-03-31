@@ -67,6 +67,7 @@ Requires player ID (as string or integer) as initial argument. Raises `invalidID
 |`rank_points`|number of rank points|integer|
 |`rank_stars`|number of rank stars|integer|
 |`rank_icon`|url to rank icon file|string|
+|`rank_value`|Rank value between lowest(0) and highest(65) rank|integer|
 |`achievements`|Dictionary of achievements with keys as achievement name and quantaty(`integer`) as value.|Dictionary|
 |`citizenship_country_id`|self explanitory |integer|
 |`citizenship_country_name`|self explanitory| string|
