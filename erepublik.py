@@ -148,6 +148,7 @@ class Citizen(object):
         self.rank_name = self.data["militaryAttributes"]["rank_name"]
         self.rank_stars = self.data["militaryAttributes"]["rank_stars"]
         self.rank_icon = self.data["militaryAttributes"]["rank_icon"]
+        self.rank_value = self.__return_rank_value()
 
         # Achievements - dict
         if self.data["achievements"]:
@@ -196,6 +197,7 @@ class Citizen(object):
             self.in_unit = False
 
         # Newspappers
+
         if self.data["newspaper"]:
             self.owns_newspaper = True
             self.newspaper_id = int(self.data["newspaper"]["id"])
@@ -221,6 +223,77 @@ class Citizen(object):
             total_count += ach_count
         parsed["Total"] = total_count
         return parsed
+
+    def __return_rank_value(self):
+        full_rank_name = self.rank_name + "*" * self.rank_stars
+        rank_list = {
+            'Recruit': 1,
+            'Private': 2,
+            'Private*': 3,
+            'Private**': 4,
+            'Private***': 5,
+            'Corporal': 6,
+            'Corporal*': 7,
+            'Corporal**': 8,
+            'Corporal***': 9,
+            'Sergeant': 10,
+            'Sergeant*': 11,
+            'Sergeant**': 12,
+            'Sergeant***': 13,
+            'Lieutenant': 14,
+            'Lieutenant*': 15,
+            'Lieutenant**': 16,
+            'Lieutenant***': 17,
+            'Captain': 18,
+            'Captain*': 19,
+            'Captain**': 20,
+            'Captain***': 21,
+            'Major': 22,
+            'Major*': 23,
+            'Major**': 24,
+            'Major***': 25,
+            'Commander': 26,
+            'Commander *': 27,
+            'Commander **': 28,
+            'Commander ***': 29,
+            'Lt Colonel': 30,
+            'Lt Colonel*': 31,
+            'Lt Colonel**': 32,
+            'Lt Colonel***': 33,
+            'Colonel': 34,
+            'Colonel*': 35,
+            'Colonel**': 36,
+            'Colonel***': 37,
+            'General': 38,
+            'General*': 39,
+            'General**': 40,
+            'General***': 41,
+            'Field Marshal': 42,
+            'Field Marshal*': 43,
+            'Field Marshal**': 44,
+            'Field Marshal***': 45,
+            'Supreme Marshal': 46,
+            'Supreme Marshal*': 47,
+            'Supreme Marshal**': 48,
+            'Supreme Marshal***': 49,
+            'National Force': 50,
+            'National Force*': 51,
+            'National Force**': 52,
+            'National Force***': 53,
+            'World Class': 54,
+            'World Class': 55,
+            'World Class': 56,
+            'World Class': 57,
+            'Legendary Force': 58,
+            'Legendary Force*': 59,
+            'Legendary Force**': 60,
+            'Legendary Force***': 61,
+            'God of War': 62,
+            'God of War*': 63,
+            'God of War**': 64,
+            'God of War***': 65,
+        }
+        return rank_list.get(full_rank_name, None)
 
 
 class Country_regions(object):
