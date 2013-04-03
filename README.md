@@ -3,9 +3,15 @@ erepAPI
 
 erepublik.com API wrapper.
 
-"Documentation" http://api.erepublik.com/doc/
+Official erepublik API "Documentation" http://api.erepublik.com/doc/
 
 "map","industries" and "war" are not currently supported due to issues with official API at the time of writing.
+
+# Installation
+
+Download this file and modify `public_key` and `private_key` to match your own personal keys.
+
+You can then just import this module directly from directory or run `setup.py install` to install it to your `PATH`.
 
 # Classes
 
