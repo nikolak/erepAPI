@@ -9,7 +9,7 @@ Official erepublik API "Documentation" http://api.erepublik.com/doc/
 
 # Installation
 
-Download this file and modify `public_key` and `private_key` to match your own personal keys.
+Download this repository and modify `public_key` and `private_key` in `erepublik.py` (lines 34 and 35) to match your own personal keys.
 
 You can then just import this module directly from directory or run `setup.py install` to install it to your `PATH`.
 
@@ -63,35 +63,35 @@ Requires player ID (as string or integer) as initial argument. Raises `invalidID
 | `id`        | supplied user ID         | string |
 | `name`        | Profile name              |   string |
 |`is_alive` | Is user profile alive |boolean|
-|`has_avatar` | Wheter user has custom avatar or not|boolean|
+|`has_avatar` | Whether user has custom avatar or not|boolean|
 |`experience_points`|Current number of experience points user has|integer|
 |`level`|Current level number|integer|
 |`birthday`|Date of profile creation, string. `MMM DD, YYYY`|string|
 |`national_rank`|Current national rank number|integer|
-|`profile_url`|full url to user profile based on ID|string|
-|`strength`|current number of strenght points|float|
+|`profile_url`|full URL to user profile based on ID|string|
+|`strength`|current number of strength points|float|
 |`rank_points`|number of rank points|integer|
 |`rank_stars`|number of rank stars|integer|
-|`rank_icon`|url to rank icon file|string|
+|`rank_icon`| URL to rank icon file|string|
 |`rank_value`|Rank value between lowest(0) and highest(65) rank|integer|
-|`achievements`|Dictionary of achievements with keys as achievement name and quantaty(`integer`) as value.|Dictionary|
-|`citizenship_country_id`|self explanitory |integer|
-|`citizenship_country_name`|self explanitory| string|
-|`citizenship_country_initials`|self explanitory|string|
-|`citizenship_region_id`|self explanitory|integer|
-|`citizenship_region_name`|self explanitory|string|
-|`residence_country_id`|self explanitory |integer|
-|`residence_country_name`|self explanitory|string|
-|`residence_country_initials`|self explanitory |string|
-|`residence_region_id`|self explanitory|integer|
-|`residence_region_name`|self explanitory|string|
+|`achievements`|Dictionary of achievements with keys as achievement name and quantity(`integer`) as value.|Dictionary|
+|`citizenship_country_id`|self explanatory |integer|
+|`citizenship_country_name`|self explanatory| string|
+|`citizenship_country_initials`|self explanatory|string|
+|`citizenship_region_id`|self explanatory|integer|
+|`citizenship_region_name`|self explanatory|string|
+|`residence_country_id`|self explanatory |integer|
+|`residence_country_name`|self explanatory|string|
+|`residence_country_initials`|self explanatory |string|
+|`residence_region_id`|self explanatory|integer|
+|`residence_region_name`|self explanatory|string|
 |`party_member`| true if player is part of political party otherwise false.|boolean|
 ||if player is member of political party, the following attributes are also available:|||
 |`party_id`| id of the party|integer|
 |`party_name`| name of the party |string|
 |`is_president`| `True` if selected player is party president, otherwise `False`|boolean|
-|`in_unit`| ture if player is part of political party otherwise false| boolean|
-||If player is memeber of military unit the following attributes are also available:||
+|`in_unit`| true if player is part of political party otherwise false| boolean|
+||If player is member of military unit the following attributes are also available:||
 |`unit_id`| id of the military unit|integer|
 |`unit_name`|name of the unit|string|
 |`unit_leader`|true if player is leader of the military unit, otherwise false|boolean|
@@ -121,7 +121,7 @@ Requires country ID (as `string` or `integer`) as initial argument.
     Sumadija 636
     Raska 639
 
-Each key in `regions` is `region name`(string) and each coresponding value is dict and contains following key, value pairs:
+Each key in `regions` is `region name`(string) and each corresponding value is dict and contains following key, value pairs:
 
 | Key        | Value Description           |  Value Type  |
 |----------------|:---------------------:|:-----:|
@@ -235,10 +235,10 @@ Requires valid battle ID (string/integer) as initial argument.
 |`attacker_id`|id of the country that's attacking(attacker) defender|integer|
 |`defender_initials`|initials of the country that's being attacked(defender)|string|
 |`attacker_initials`|initials of the country that's attacking(attacker)|string|
-|`defender_alies`|alies of the country that's being attacked(defender)|dictionary|
-|`attacker_alies`|alies of the country that's attacking(attacker)|dictionary|
+|`defender_allies`|allies of the country that's being attacked(defender)|dictionary|
+|`attacker_allies`|allies of the country that's attacking(attacker)|dictionary|
 
-Alies dictionary, country names are strings:
+Allies dictionary, country names are strings:
 
 {
     country_name:dictionary,
@@ -247,7 +247,7 @@ Alies dictionary, country names are strings:
 }
 
 
-Alies dictionary values structure:
+Allies dictionary values structure:
 
 | Key        | Value Description           | Type  |
 |----------------|:---------------------:|:-----:|
