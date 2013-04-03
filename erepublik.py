@@ -457,24 +457,24 @@ class Battle(object):
         # Defenders
         self.defender_id = int(self.data["battle"]["progress"]["countries"]["victim_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
-        self.defender_alies = {}
+        self.defender_allies = {}
         for item in self.data["battle"]["progress"]["countries"]["victim_country"]["allies"]:
                 country_name = item["country"]["name"]
                 country_id = int(item["country"]["allied_country_id"])
                 country_initials = item["country"]["initials"]
-                self.defender_alies[country_name] = {"id": country_id,
+                self.defender_allies[country_name] = {"id": country_id,
                                                      "initials": country_initials
                                                      }
 
         # Invaders
         self.defender_id = int(self.data["battle"]["progress"]["countries"]["invader_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
-        self.defender_alies = {}
+        self.defender_allies = {}
         for item in self.data["battle"]["progress"]["countries"]["invader_country"]["allies"]:
                 country_name = item["country"]["name"]
                 country_id = int(item["country"]["allied_country_id"])
                 country_initials = item["country"]["initials"]
-                self.defender_alies[country_name] = {"id": country_id,
+                self.defender_allies[country_name] = {"id": country_id,
                                                      "initials": country_initials
                                                      }
 
