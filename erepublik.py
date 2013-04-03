@@ -21,9 +21,16 @@
 
 import hmac
 import json
-import urllib2
 from hashlib import sha256
+from sys import version_info
 from time import strftime, gmtime, localtime
+
+try:
+    # Python 2
+    from urllib2 import urlopen, Request
+except ImportError:
+    # Python 3
+    from urllib.request import urlopen, Request
 
 
 api_url = "http://api.erepublik.com/"
@@ -44,7 +51,7 @@ def _construct_url(resource, action, params=None):
     final_url = '{}/{}'.format(resource, action)
     if type(params) == list:
         final_url += '?'
-        for i in xrange(len(params)):
+        for i in range(len(params)):
             if i < len(params) - 1:
                 final_url += params[i] + '&'
             else:
@@ -69,13 +76,23 @@ def _construct_headers(url):
     is a hash that represents an encrypted value of a concatenated string
     formed from {resource}, {action}, {params} (if they exist),
     and {date} (the same value Date header has).
+
     """
     header = {"Auth": public_key + '/'}
     date = strftime("%a, %d %b %Y %H:%M:%S", gmtime())
     header["Date"] = date
-    to_digest = (url.replace('/', ':').replace('?', ':') + ':').lower()
-    to_digest += date
-    header["Auth"] += hmac.new(private_key, to_digest, sha256).hexdigest()
+    to_digest = (url.replace('/', ':').replace('?', ':') + ':').lower() + date
+    if version_info >= (3, 0):
+        # 3.X behavior is correct. Since HMAC operates on bytes, not text,
+        # only bytes are accepted. In Python 2, the acceptance of
+        # Unicode strings is more an accident than a feature.
+        header["Auth"] += hmac.new(bytes(private_key, 'utf-8'),
+                                   bytes(to_digest, 'utf-8'),
+                                   sha256).hexdigest()
+    else:
+        header["Auth"] += hmac.new(private_key,
+                                   to_digest,
+                                   sha256).hexdigest()
     return header
 
 
@@ -83,11 +100,11 @@ def _load(url, headers):
     """
     Returns json/dictionary of data in "message" from API response
     """
-    req = urllib2.Request(api_url + url)
+    req = Request(api_url + url)
     req.add_header("Date", headers["Date"])
     req.add_header("Auth", headers["Auth"])
-    response = urllib2.urlopen(req)
-    content = response.read()
+    response = urlopen(req)
+    content = response.read().decode("utf-8")
     data = json.loads(content)
     try:
         if data["code"] != 200:
@@ -197,7 +214,6 @@ class Citizen(object):
             self.in_unit = False
 
         # Newspappers
-
         if self.data["newspaper"]:
             self.owns_newspaper = True
             self.newspaper_id = int(self.data["newspaper"]["id"])
@@ -439,7 +455,6 @@ class Battle(object):
         self.finish_reason = self.data["battle"]["progress"]["finished-reason"]
 
         # Defenders
-
         self.defender_id = int(self.data["battle"]["progress"]["countries"]["victim_country"]["id"])
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
         self.defender_alies = {}
