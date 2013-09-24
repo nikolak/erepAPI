@@ -22,7 +22,7 @@ import hmac
 import json
 from hashlib import sha256
 from sys import version_info
-from time import strftime, gmtime, localtime
+from time import strftime, gmtime
 
 try:
     # Python 2
@@ -108,7 +108,7 @@ def _load(url, headers):
     data = json.loads(content)
     try:
         if data["code"] != 200:
-            raise invalidCode
+            raise invalidCode #TODO: Remove custom exceptions and go with standard ones
         else:
             return data["message"]
     except:

@@ -1,5 +1,4 @@
 # Copyright (c) 2013 Nikola Kovacevic   <nikolak@outlook.com>,
-#                                       <nikola.kovacevic91@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -18,18 +17,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # SOFTWARE
 import api
+from time import strftime, localtime
 
-
-class invalidID(Exception):
-     def __init__(self, id_value):
-         self.id_value = id_value
-
-     def __str__(self):
-         return repr(self.id_value)
 
 class Battle(object):
-
     """docstring for Battle"""
+
     def __init__(self, battleID):
         super(Battle, self).__init__()
         self.id = str(battleID)
@@ -37,7 +30,7 @@ class Battle(object):
         self.__action = "index"
         self.__params = "battleId=" + self.id
         if not self.id.isdigit():
-            raise invalidID
+            raise ValueError(self.id)
         else:
             self.__url = api._construct_url(self.__resource, self.__action, self.__params)
             self.__headers = api._construct_headers(self.__url)
@@ -59,24 +52,24 @@ class Battle(object):
         self.defender_initials = self.data["battle"]["progress"]["countries"]["victim_country"]["initials"]
         self.defender_allies = {}
         for item in self.data["battle"]["progress"]["countries"]["victim_country"]["allies"]:
-                country_name = item["country"]["name"]
-                country_id = int(item["country"]["allied_country_id"])
-                country_initials = item["country"]["initials"]
-                self.defender_allies[country_name] = {"id": country_id,
-                                                     "initials": country_initials
-                                                     }
+            country_name = item["country"]["name"]
+            country_id = int(item["country"]["allied_country_id"])
+            country_initials = item["country"]["initials"]
+            self.defender_allies[country_name] = {"id": country_id,
+                                                  "initials": country_initials
+            }
 
         # Invaders
-        self.defender_id = int(self.data["battle"]["progress"]["countries"]["invader_country"]["id"])
-        self.defender_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
-        self.defender_allies = {}
+        self.attacker_id = int(self.data["battle"]["progress"]["countries"]["invader_country"]["id"])
+        self.attacker_initials = self.data["battle"]["progress"]["countries"]["invader_country"]["initials"]
+        self.attacker_allies = {}
         for item in self.data["battle"]["progress"]["countries"]["invader_country"]["allies"]:
-                country_name = item["country"]["name"]
-                country_id = int(item["country"]["allied_country_id"])
-                country_initials = item["country"]["initials"]
-                self.defender_allies[country_name] = {"id": country_id,
-                                                     "initials": country_initials
-                                                     }
+            country_name = item["country"]["name"]
+            country_id = int(item["country"]["allied_country_id"])
+            country_initials = item["country"]["initials"]
+            self.attacker_allies[country_name] = {"id": country_id,
+                                                  "initials": country_initials
+            }
 
     def _format_time(self, api_time):
         if api_time.isdigit() is False:

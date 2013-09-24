@@ -1,5 +1,4 @@
 # Copyright (c) 2013 Nikola Kovacevic   <nikolak@outlook.com>,
-#                                       <nikola.kovacevic91@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,18 +18,12 @@
 # SOFTWARE
 import api
 
-class invalidID(Exception):
-     def __init__(self, id_value):
-         self.id_value = id_value
-
-     def __str__(self):
-         return repr(self.id_value)
 
 class Citizen(object):
-
     """Contains all citizen variables
         requires valid citizen ID as initial parameter
     """
+
     def __init__(self, citizenID):
         """
         :param citizenID: String or Integer of citizen ID
@@ -43,7 +36,7 @@ class Citizen(object):
         self.profile_url = "http://www.erepublik.com/en/citizen/profile/" + self.id
 
         if not self.id.isdigit():
-            raise invalidID(self.id)
+            raise ValueError
         else:
             self.__url = api._construct_url(self.__resource,
                                             self.__action,
@@ -54,7 +47,7 @@ class Citizen(object):
         # General attributes
         self.name = self.data["general"]["name"]
         if self.name is None:
-            raise invalidID
+            raise ValueError
         self.is_alive = self.data["general"]["is_alive"] == "1"
         self.has_avatar = self.data["general"]["has_avatar"]
         self.avatar = self.data["general"]["avatar"]
@@ -78,25 +71,25 @@ class Citizen(object):
             self.achievements = {}
 
         # Location
-        self.citizenship_country_id =\
+        self.citizenship_country_id = \
             int(self.data["location"]["citizenship_country_id"])
-        self.citizenship_country_name =\
+        self.citizenship_country_name = \
             self.data["location"]["citizenship_country_id"]
-        self.citizenship_country_initials =\
+        self.citizenship_country_initials = \
             self.data["location"]["citizenship_country_initials"]
-        self.citizenship_region_id =\
+        self.citizenship_region_id = \
             int(self.data["location"]["citizenship_region_id"])
-        self.citizenship_region_name =\
+        self.citizenship_region_name = \
             self.data["location"]["citizenship_region_name"]
-        self.residence_country_id =\
+        self.residence_country_id = \
             int(self.data["location"]["residence_country_id"])
-        self.residence_country_name =\
+        self.residence_country_name = \
             self.data["location"]["residence_country_name"]
-        self.residence_country_initials =\
+        self.residence_country_initials = \
             self.data["location"]["residence_country_initials"]
-        self.residence_region_id =\
+        self.residence_region_id = \
             int(self.data["location"]["residence_region_id"])
-        self.residence_region_name =\
+        self.residence_region_name = \
             self.data["location"]["residence_region_name"]
 
         # Party info
@@ -201,9 +194,9 @@ class Citizen(object):
             'National Force**': 52,
             'National Force***': 53,
             'World Class': 54,
-            'World Class': 55,
-            'World Class': 56,
-            'World Class': 57,
+            'World Class*': 55,
+            'World Class**': 56,
+            'World Class***': 57,
             'Legendary Force': 58,
             'Legendary Force*': 59,
             'Legendary Force**': 60,
@@ -214,4 +207,3 @@ class Citizen(object):
             'God of War***': 65,
         }
         return rank_list.get(full_rank_name, None)
-
