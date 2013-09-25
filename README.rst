@@ -1,4 +1,35 @@
-The MIT License (MIT)
+=============================
+erepapi
+=============================
+
+.. image:: https://badge.fury.io/py/erepapi.png
+    :target: http://badge.fury.io/py/erepapi
+
+.. image:: https://pypip.in/d/erepapi/badge.png
+        :target: https://crate.io/packages/erepapi?version=latest
+
+
+Unofficial python wrapper for erepublik api
+
+
+Features
+--------
+
+* Simple access to api.erepublik.com
+
+* Class based objects for Citizens, Regions, Countries, Battles, Country Regions
+
+* Python 2 and 3 supported.
+
+* pip installer
+
+* No 3rd party dependencies
+
+* Examples provided for all classes
+
+
+License (MIT)
+--------
 
 Copyright (c) 2013 Nikola Kovacevic
 
