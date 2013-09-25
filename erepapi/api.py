@@ -1,5 +1,4 @@
 # Copyright (c) 2013 Nikola Kovacevic   <nikolak@outlook.com>,
-#                                       <nikola.kovacevic91@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +21,7 @@ import hmac
 import json
 from hashlib import sha256
 from sys import version_info
-from time import strftime, gmtime, localtime
+from time import strftime, gmtime
 
 try:
     # Python 2
@@ -78,6 +77,8 @@ def _construct_headers(url):
     and {date} (the same value Date header has).
 
     """
+    if public_key is None or private_key is None:
+        raise Exception("Invalid keys")
     header = {"Auth": public_key + '/'}
     date = strftime("%a, %d %b %Y %H:%M:%S", gmtime())
     header["Date"] = date
@@ -106,17 +107,7 @@ def _load(url, headers):
     response = urlopen(req)
     content = response.read().decode("utf-8")
     data = json.loads(content)
-    try:
-        if data["code"] != 200:
-            raise invalidCode
-        else:
-            return data["message"]
-    except:
-        raise urlParseError
-
-
-class urlParseError(Exception):
-    pass
-
-class keysNotSet(Exception):
-    pass
+    if data["code"] != 200:
+        raise #TODO: Remove custom exceptions and go with standard ones
+    else:
+        return data["message"]

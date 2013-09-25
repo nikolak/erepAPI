@@ -1,5 +1,4 @@
 # Copyright (c) 2013 Nikola Kovacevic   <nikolak@outlook.com>,
-#                                       <nikola.kovacevic91@gmail.com>
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +18,6 @@
 # SOFTWARE
 import api
 
-class invalidID(Exception):
-     def __init__(self, id_value):
-         self.id_value = id_value
-
-     def __str__(self):
-         return repr(self.id_value)
-
 class Region(object):
 
     """
@@ -39,10 +31,10 @@ class Region(object):
         self.page = str(page)
         self.__resource = "region"
         self.__action = "citizens"
-        self.__params = ["regionId=" + self.__id, "page=" + self.__page]
+        self.__params = ["regionId=" + self.id, "page=" + self.page]
 
-        if not self.id.isdigit():
-            raise invalidID
+        if not self.id.isdigit() or not self.page.isdigit():
+            raise ValueError
         else:
             self.__url = api._construct_url(self.__resource, self.__action, self.__params)
             self.__headers = api._construct_headers(self.__url)
