@@ -189,25 +189,114 @@ To use country regions class just import it from erepapi::
 You can't instantiate empty ``CountryRegions`` object, CountryRegions class takes country ID
 when initializing as only argument.
 
-Example usage::
+Example usage:
 
-    >>> from erepapi import CountryRegions
-    >>> regions=CountryRegions(65).regions
-    >>> for k,v in regions.items():
-    ...     print k,v["id"]
-    ...
-    Eastern Serbia 637
-    Belgrade 635
-    Vojvodina 634
-    Kosovo 743
-    Southern Serbia 640
-    Western Serbia 638
-    Sumadija 636
-    Raska 639
-
+.. literalinclude:: examples/c_regions_example.py
 
 Battle object variables
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+``regions`` variable contains list of ``Region`` objects each with following variables:
+
++---------------------------+-------------------------------------------------------------------------------+-----------+
+| Variable name             | Description                                                                   | Type      |
++===========================+===============================================================================+===========+
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``name``                   |Name of the region                                                             |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``id``                     |ID of the region                                                               |intger     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``owner_id``               |ID of the country that's current owner                                         |integer    |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``original_owner_id``      |ID of the original owner country                                               |integer    |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``url``                    |Full in game url for that region                                               |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+
 Error types raised
 ^^^^^^^^^^^^^^^^^^
+
+``ValueError``  if the supplied Country ID is invalid.
+
+Region Class
+------------
+
+To use region class just import it from erepapi::
+
+    from erepapi import Regions
+
+
+This will return object with ``id`` and ``citizenIDs`` variables, the latter contains list of citizen IDs that live in
+that region.
+
+``Regions`` requries ``id`` parameter and accepts optional ``page`` param (as integer), the first one being the region ID
+the second page of the ids. 100 ids are displayed max per page.
+
+If region has no citizens or the page is empty ``citizenIDs`` will be equal to ``None``
+
+Example usage::
+
+    from erepapi import api, Region
+
+    api.public_key="your public key"
+    api.private_key="your private key"
+
+    region=Region(635, page=2)
+
+    for citizenID in region.citizenIDs:
+        #do something with citizenID (integer)
+
+Error types raised
+^^^^^^^^^^^^^^^^^^
+
+``ValueError`` if the supplied ID or page number is invalid type.
+
+
+Country Class
+------------
+To use region class just import it from erepapi::
+
+    from erepapi import Country
+
+Base class has ``None`` values assigned to variables below and ``all_countries`` variable that contains list of
+names for every country that's available in game, list is fetched from API not hard coded
+
+After initialization 2 functions can be used to update country variables, ``by_name`` and ``by_id`` these functions require
+country name or country ID, respectively, for information on which country data to fetch.
+
+Variables stay equal to ``None`` if supplied id or name are invalid/ don't exist.
+
+
+Example usage:
+
+.. literalinclude:: examples/country_example.py
+
+
+Country object variables
+^^^^^^^^^^^^^^^^^^^^^^^
+
++---------------------------+-------------------------------------------------------------------------------+-----------+
+| Variable name             | Description                                                                   | Type      |
++===========================+===============================================================================+===========+
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``id``                     |Country ID                                                                     |integer    |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``name``                   |Country name                                                                   |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``initials``               |Country initials                                                               |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``color``                  |Country color code                                                             |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``continent_id``           |Continent ID, this will always be equal to None but it exists...               |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``continent_name``         |Continent name, always None                                                    |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``capital_region_id``      |Capital region ID of that country                                              |integer    |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+|``capital_region_name``    |Capital region name of that country                                            |string     |
++---------------------------+-------------------------------------------------------------------------------+-----------+
+
+Error types raised
+^^^^^^^^^^^^^^^^^^
+
+None

@@ -78,6 +78,8 @@ def _construct_headers(url):
     and {date} (the same value Date header has).
 
     """
+    if public_key is None or private_key is None:
+        raise invalidKeys
     header = {"Auth": public_key + '/'}
     date = strftime("%a, %d %b %Y %H:%M:%S", gmtime())
     header["Date"] = date
@@ -108,7 +110,7 @@ def _load(url, headers):
     data = json.loads(content)
     try:
         if data["code"] != 200:
-            raise invalidCode #TODO: Remove custom exceptions and go with standard ones
+            raise ValueError #TODO: Remove custom exceptions and go with standard ones
         else:
             return data["message"]
     except:
@@ -119,4 +121,7 @@ class urlParseError(Exception):
     pass
 
 class keysNotSet(Exception):
+    pass
+
+class invalidKeys(Exception):
     pass
